@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<image>
-		<textureimageurl>webapps/adnetwork/adresources/textureimages</textureimageurl>
+		<advertiserapiurl>http://localhost:8080/advertiser</advertiserapiurl>
 		<imageresourceurl>http://localhost:8080/adnetwork/adresources/textureimages</imageresourceurl>
 	</image>
 </root>

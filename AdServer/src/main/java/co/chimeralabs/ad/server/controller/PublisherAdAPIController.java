@@ -20,8 +20,12 @@ public class PublisherAdAPIController {
 	
 	@RequestMapping(value={"/publisher/api/loadad", "/"}, method=RequestMethod.GET)
 	public ImageTextureAdResponseClientDTO getAdMetadata(){
+		InputStream inputStream = getClass().getResourceAsStream("/machine/MachineConstants.xml");
+		
 		AdvertiserServerAPI advertiserServerAPI = new AdvertiserServerAPI();
+		advertiserServerAPI.setUrl(RetrieveResources.retrieveResourcesAppConatants(inputStream, "advertiserapiurl").get(0)+"/"	+"api/ads");
 		ImageTextureAdsDTO imageObjects = advertiserServerAPI.getAdResourceData();
+		
 		//co.chimeralabs.advertiser.client.apiDTO.AdResourceData adData = advertiserServerAPI.getAdResourceData();
 		//AdResourceData adResourceData = new AdResourceData(adData.getResourceURL(), adData.getResourceMetadata(), adData.getResourceErrorCode());
 		//AdResourceData adResourceData = new AdResourceData("asdf", "metadata", "200");
@@ -39,9 +43,9 @@ public class PublisherAdAPIController {
 		Random random = new Random();
 		int index = random.nextInt(size);
 		ImageTextureAdDTO imageObject = ads.get(index);
-		InputStream inputStream = getClass().getResourceAsStream("/machine/MachineConstants.xml");
+		inputStream = getClass().getResourceAsStream("/machine/MachineConstants.xml");
 		String baseDir = RetrieveResources.retrieveResourcesAppConatants(inputStream, "imageresourceurl").get(0);
-		String url = baseDir + File.separator + imageObject.getAdResourceIdentifier() +"."+imageObject.getAdResourceFormat();
+		String url = baseDir + "/" + imageObject.getAdResourceIdentifier() +"."+imageObject.getAdResourceFormat();
 		response.setResourceURL(url);
 		return response;
 	}
