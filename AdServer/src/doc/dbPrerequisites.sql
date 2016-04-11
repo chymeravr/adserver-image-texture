@@ -1,0 +1,1 @@
+INSERT into ad_serving_id(id, current_ad_serving_id) values(1, 1);
