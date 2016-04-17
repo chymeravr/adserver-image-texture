@@ -87,13 +87,25 @@ public class PublisherAdAPIController {
 					resourceData.setErrorCode(0);
 					resourceData.setErrorMsg("");
 					response.addAdResource(resourceData);
-					AdServingLog log = new AdServingLog(resourceData.getAdServingId(), imageObject.getAdvertiserId(), imageObject.getAdId(), 10.1, 9.1);
-					String logJson = "";
+					AdServingLog log = new AdServingLog(resourceData.getAdServingId(), imageObject.getAdvertiserId(), imageObject.getAdId(), 10.1, 9.1, adRequest);
 					AnalyticsLogDTO logDTO = new AnalyticsLogDTO();
 					logDTO.setType(5);
 					try {
-						logJson = objectMapper.writeValueAsString(log);
-						logDTO.setDtoObj(logJson);
+						String jsonObj = objectMapper.writeValueAsString(log);
+						jsonObj = jsonObj.substring(1, jsonObj.length() - 1);
+			            String[] properties = jsonObj.split(",");
+			            String finalValue = "";
+			            int j = 0;
+			            for (j = 0; j < properties.length - 1; j++)
+			            {
+			                String property = properties[j];
+			                String value = property.split(":")[1];
+			                finalValue = finalValue + value + "\t";
+			            }
+			            String propertyLast = properties[j];
+			            String valueLast = propertyLast.split(":")[1];
+			            finalValue = finalValue + valueLast;
+						logDTO.setDtoObj(finalValue);
 						analyticsLogs.add(logDTO);
 					} catch (JsonProcessingException e) {
 						// TODO Auto-generated catch block

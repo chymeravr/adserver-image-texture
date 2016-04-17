@@ -1,22 +1,32 @@
 package co.chimeralabs.ad.server.apiDTO;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class AdServingLog {
 	private String adServingId;
 	private String advertiserId;
 	private String adId;
 	private Double sellPrice;
 	private Double buyPrice;
+	private String location;
+	private String hmd;
+	private String OS;
+	private String device;
 	
 	public AdServingLog(){
 		
 	}
 	
-	public AdServingLog(String adServingId, String advertiserId, String adId, Double sellPrice, Double buyPrice){
+	public AdServingLog(String adServingId, String advertiserId, String adId, Double sellPrice, Double buyPrice, AdRequestDTO adRequestDTO){
 		this.adServingId = adServingId;
 		this.advertiserId = advertiserId;
 		this.adId = adId;
 		this.sellPrice = sellPrice;
 		this.buyPrice = buyPrice;
+		this.location = adRequestDTO.getLocation();
+		this.hmd = adRequestDTO.getHmd();
+		this.OS = adRequestDTO.getOS();
+		this.device = adRequestDTO.getDevice();
 	}
 	
 	public String getAdServingId() {
@@ -48,6 +58,40 @@ public class AdServingLog {
 	}
 	public void setBuyPrice(Double buyPrice) {
 		this.buyPrice = buyPrice;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getHmd() {
+		return hmd;
+	}
+
+	public void setHmd(String hmd) {
+		this.hmd = hmd;
+	}
+
+	@JsonProperty("OS")
+	public String getOS() {
+		return OS;
+	}
+	
+	@JsonProperty("OS")
+	public void setOS(String oS) {
+		OS = oS;
+	}
+
+	public String getDevice() {
+		return device;
+	}
+
+	public void setDevice(String device) {
+		this.device = device;
 	}
 	
 	
