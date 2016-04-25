@@ -1,26 +1,19 @@
 package co.chimeralabs.ad.server.controller;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.AsyncRestTemplate;
-import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -29,6 +22,7 @@ import co.chimeralabs.ad.server.apiDTO.AdResourceMetadata;
 import co.chimeralabs.ad.server.apiDTO.AdResponseDTO;
 import co.chimeralabs.ad.server.apiDTO.AdServingLog;
 import co.chimeralabs.ad.server.apiDTO.AnalyticsLogDTO;
+import co.chimeralabs.ad.server.apiDTO.ClientAppConfigParamsDTO;
 import co.chimeralabs.ad.server.service.AdServingIdService;
 import co.chimeralabs.ad.server.util.RetrieveResources;
 import co.chimeralabs.advertiser.client.api.*;
@@ -36,18 +30,28 @@ import co.chimeralabs.advertiser.client.apiDTO.ImageTextureAdDTO;
 import co.chimeralabs.advertiser.client.apiDTO.ImageTextureAdsDTO;
 
 @RestController
-public class PublisherAdAPIController {
+public class AdServingAPIController {
+	private static final Logger analyticsLogger = LoggerFactory.getLogger(AdServingAPIController.class);
 	
 	@Autowired
 	AdServingIdService adServingIdService;
 	
-	@RequestMapping(value={"/publisher/api/loadad", "/"}, method=RequestMethod.POST, consumes="application/json")
-	public AdResponseDTO getAdMetadata(@RequestBody AdRequestDTO adRequest){
-		ObjectMapper objectMapper = new ObjectMapper();
-		List<AnalyticsLogDTO> analyticsLogs = new ArrayList<AnalyticsLogDTO>();
-		
+	@RequestMapping(value={"clientappconfigparams"}, method=RequestMethod.GET)
+	public ClientAppConfigParamsDTO getClientAppConfigParams() throws IOException{
+		ClientAppConfigParamsDTO configParams = new ClientAppConfigParamsDTO();
 		InputStream inputStream = getClass().getResourceAsStream("/machine/MachineConstants.xml");
-		
+		configParams.setAnalyticsUrl(RetrieveResources.retrieveResourcesAppConatants(inputStream, "analyticsurlforclient").get(0));
+		inputStream = getClass().getResourceAsStream("/machine/MachineConstants.xml");
+		configParams.setImageTextureAdUnitUrl(RetrieveResources.retrieveResourcesAppConatants(inputStream, "imagetextureaduniturlforclient").get(0));
+		inputStream.close();
+		return configParams;
+	}
+	
+	@RequestMapping(value={"/api/getadmetadata", "/"}, method=RequestMethod.POST, consumes="application/json")
+	public AdResponseDTO getAdMetadata(@RequestBody AdRequestDTO adRequest) throws IOException{
+		Long timestamp = System.currentTimeMillis();
+		ObjectMapper objectMapper = new ObjectMapper();
+		InputStream inputStream = getClass().getResourceAsStream("/machine/MachineConstants.xml");
 		AdResponseDTO response = new AdResponseDTO();
 		if(adRequest==null){
 			response.setErrorCode(1);
@@ -106,7 +110,8 @@ public class PublisherAdAPIController {
 			            String valueLast = propertyLast.split(":")[1];
 			            finalValue = finalValue + valueLast;
 						logDTO.setDtoObj(finalValue);
-						analyticsLogs.add(logDTO);
+						logDTO.setDtoObj(timestamp.toString() + "\t" + logDTO.getType() + "\t" +logDTO.getDtoObj());
+						analyticsLogger.info(logDTO.getDtoObj());
 					} catch (JsonProcessingException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -121,17 +126,18 @@ public class PublisherAdAPIController {
 		HttpHeaders headers = new HttpHeaders();
 		String res = restTemplate.postForObject(analyticsLogUrl, analyticsLogs, String.class);
 		*/
-		AsyncRestTemplate asycTemp = new AsyncRestTemplate();
-		String analyticsLogUrl = "http://localhost:8080/analyticsdatareceiver/analytics";
-		HttpMethod method = HttpMethod.POST;
-		Class<String> responseType = String.class;
-		//create request entity using HttpHeaders
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		
-		HttpEntity<List<AnalyticsLogDTO>> requestEntity = new HttpEntity<List<AnalyticsLogDTO>>(analyticsLogs, headers);
-		ListenableFuture<ResponseEntity<String>> future = asycTemp.exchange(analyticsLogUrl, method, requestEntity, responseType);
-		
+//		AsyncRestTemplate asycTemp = new AsyncRestTemplate();
+//		String analyticsLogUrl = "http://localhost:8080/analyticsdatareceiver/analytics";
+//		HttpMethod method = HttpMethod.POST;
+//		Class<String> responseType = String.class;
+//		//create request entity using HttpHeaders
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.setContentType(MediaType.APPLICATION_JSON);
+//		
+//		HttpEntity<List<AnalyticsLogDTO>> requestEntity = new HttpEntity<List<AnalyticsLogDTO>>(analyticsLogs, headers);
+//		ListenableFuture<ResponseEntity<String>> future = asycTemp.exchange(analyticsLogUrl, method, requestEntity, responseType);
+//		
+		inputStream.close();
 		return response;
 	}
 	

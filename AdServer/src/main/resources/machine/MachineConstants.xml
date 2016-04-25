@@ -4,4 +4,8 @@
 		<advertiserapiurl>http://localhost:8080/advertiser</advertiserapiurl>
 		<imageresourceurl>http://localhost:8080/adnetwork/adresources/textureimages</imageresourceurl>
 	</image>
+	<client>
+		<analyticsurlforclient>http://localhost:8080/analyticsdatareceiver/analytics</analyticsurlforclient>
+		<imagetextureaduniturlforclient>http://localhost:8080/adserver/api/getadmetadata</imagetextureaduniturlforclient>
+	</client>
 </root>
