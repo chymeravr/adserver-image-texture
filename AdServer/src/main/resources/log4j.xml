@@ -36,12 +36,12 @@
 		<appender-ref ref="analytics.file" />
 	</appender>
 	
-	<logger name="co.chimeralabs.ad.server.controller.AdServingAPIController" additivity="false" >
+	<logger name="co.chimeralabs.ad.server.controller.AdServingAPIController.adserveranalytics" additivity="false" >
 		<level value="info" />
 		<appender-ref ref="analytics.async" />
 	</logger>
 	<root>
-		<priority value="info" />
+		<priority value="debug" />
 		<appender-ref ref="default.async" />
 	</root>
 </log4j:configuration>

@@ -31,7 +31,8 @@ import co.chimeralabs.advertiser.client.apiDTO.ImageTextureAdsDTO;
 
 @RestController
 public class AdServingAPIController {
-	private static final Logger analyticsLogger = LoggerFactory.getLogger(AdServingAPIController.class);
+	private static final Logger logger = LoggerFactory.getLogger(AdServingAPIController.class);
+	private static final Logger analyticsLogger = LoggerFactory.getLogger(AdServingAPIController.class.getName() + ".adserveranalytics");
 	
 	@Autowired
 	AdServingIdService adServingIdService;
@@ -68,28 +69,30 @@ public class AdServingAPIController {
 				AdvertiserServerAPI advertiserServerAPI = new AdvertiserServerAPI();
 				advertiserServerAPI.setUrl(RetrieveResources.retrieveResourcesAppConatants(inputStream, "advertiserapiurl").get(0)+"/"	+"api/ads");
 				ImageTextureAdsDTO imageObjects = advertiserServerAPI.getAdResourceData();
-				if(imageObjects.getErrorMsg() != null){
+				if(imageObjects == null)
+					logger.warn("getAdMetadata - advertiser server returned null");
+				else if(imageObjects.getErrorMsg() != null){
 					response.setErrorCode(0);
 					response.setErrorMsg("");
+					logger.debug("getAdMetadata - advertiser server returned with success");
 				}
 				else{
 					response.setErrorCode(1);
 					response.setErrorMsg(imageObjects.getErrorMsg());
+					logger.debug("getAdMetadata - advertiser server returned with error message=" + imageObjects.getErrorMsg());
 				}
 				List<ImageTextureAdDTO> ads = imageObjects.getAds();
 				int size = ads.size();
-				inputStream = getClass().getResourceAsStream("/machine/MachineConstants.xml");
-				String baseDir = RetrieveResources.retrieveResourcesAppConatants(inputStream, "imageresourceurl").get(0);
 				Random random = new Random();
 				for(int i=0; i<adRequest.getnDistinctAds(); i++){
 					AdResourceMetadata resourceData = new AdResourceMetadata();
 					int index = random.nextInt(size);
 					ImageTextureAdDTO imageObject = ads.get(index);
-					String url = baseDir + "/" + imageObject.getAdResourceIdentifier() +"."+imageObject.getAdResourceFormat();
-					resourceData.setDiffuseTextureImageUrl(url);
+					resourceData.setDiffuseTextureImageUrl(imageObject.getAdResourceUrl());
 					resourceData.setAdServingId(adServingIdService.getAdServingIdHashed());
 					resourceData.setErrorCode(0);
 					resourceData.setErrorMsg("");
+					logger.debug("getAdMetadata - adding resource with adServingId=" + resourceData.getAdServingId() + " and resourceUrl=" + resourceData.getDiffuseTextureImageUrl() );
 					response.addAdResource(resourceData);
 					AdServingLog log = new AdServingLog(resourceData.getAdServingId(), imageObject.getAdvertiserId(), imageObject.getAdId(), 10.1, 9.1, adRequest);
 					AnalyticsLogDTO logDTO = new AnalyticsLogDTO();
@@ -118,6 +121,7 @@ public class AdServingAPIController {
 					}
 				}
 			}
+			
 			break;
 		}
 		
@@ -138,6 +142,7 @@ public class AdServingAPIController {
 //		ListenableFuture<ResponseEntity<String>> future = asycTemp.exchange(analyticsLogUrl, method, requestEntity, responseType);
 //		
 		inputStream.close();
+		logger.debug("getAdMetadata - Returning");
 		return response;
 	}
 	

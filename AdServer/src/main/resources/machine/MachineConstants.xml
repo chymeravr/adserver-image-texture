@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<image>
-		<advertiserapiurl>http://localhost:8080/advertiser</advertiserapiurl>
-		<imageresourceurl>http://localhost:8080/adnetwork/adresources/textureimages</imageresourceurl>
+		<advertiserapiurl>http://advertiser.developer.chimeralabs.co</advertiserapiurl>
 	</image>
 	<client>
 		<analyticsurlforclient>http://localhost:8080/analyticsdatareceiver/analytics</analyticsurlforclient>
 		<imagetextureaduniturlforclient>http://localhost:8080/adserver/api/getadmetadata</imagetextureaduniturlforclient>
 	</client>
+	<cloudstoragedetails>
+		<azure>
+			<azurestoragebaseurl>https://storagedeveloperchimera.blob.core.windows.net</azurestoragebaseurl>
+			<azureimagetextureadimagecontainer>image-texture-ad-images</azureimagetextureadimagecontainer>
+		</azure>
+	</cloudstoragedetails>
 </root>
