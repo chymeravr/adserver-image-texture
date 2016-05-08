@@ -4,8 +4,8 @@
 		<advertiserapiurl>http://advertiser.developer.chimeralabs.co</advertiserapiurl>
 	</image>
 	<client>
-		<analyticsurlforclient>http://localhost:8080/analyticsdatareceiver/analytics</analyticsurlforclient>
-		<imagetextureaduniturlforclient>http://localhost:8080/adserver/api/getadmetadata</imagetextureaduniturlforclient>
+		<analyticsurlforclient>http://analyticsdatareceiver.developer.chimeralabs.co/analytics</analyticsurlforclient>
+		<imagetextureaduniturlforclient>http://adserver.developer.chimeralabs.co/api/getadmetadata</imagetextureaduniturlforclient>
 	</client>
 	<cloudstoragedetails>
 		<azure>
