@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
+<!-- 		<Console name="console" target="SYSTEM_OUT"> -->
+<!-- 			<PatternLayout -->
+<!-- 				pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" /> -->
+<!-- 		</Console> -->
+		<RollingFile name="default"
+			fileName="${sys:catalina.home}/logs/chimera_adserver.log"
+			filePattern="${sys:catalina.home}/logs/chimera_adserver.%d{yyyy-MM-dd}.log">
+			<PatternLayout pattern="%d %p | %m%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
+			</Policies>
+		</RollingFile>
+		<Async name="defaultAsync">
+			<AppenderRef ref="default" />
+		</Async>
+		
+		<Flume name="adserved" type="Avro" compress="false">
+			<Agent host="localhost" port="21113" />
+			<PatternLayout pattern="%m%n" />
+		</Flume>
+		<Async name="adservedAsync">
+			<AppenderRef ref="adserved" />
+		</Async>
+		
+	</Appenders>
+	<Loggers>
+		<Root level="info" additivity="false">
+			<AppenderRef ref="defaultAsync" />
+		</Root>
+		<Logger level="info"
+			name="co.chimeralabs.ad.server.controller.AdServingAPIController.adserveranalytics"
+			additivity="false">
+			<AppenderRef ref="adservedAsync" />
+		</Logger>
+	</Loggers>
+</Configuration>
