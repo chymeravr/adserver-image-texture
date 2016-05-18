@@ -19,7 +19,7 @@
 		
 		<Flume name="adserved" type="Avro" compress="false">
 			<Agent host="localhost" port="21113" />
-			<PatternLayout pattern="%m%n" />
+			<PatternLayout pattern="%m" />
 		</Flume>
 		<Async name="adservedAsync">
 			<AppenderRef ref="adserved" />
